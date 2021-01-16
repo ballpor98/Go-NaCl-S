@@ -1,0 +1,16 @@
+version: "3"
+services:
+  api:
+    image: salt-api:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    networks:
+      - local
+    environment:
+      AES_SECRET: "alduWnI0dTd4IUElRCpHLUthUGRTZ1VrWHAyczV2OHk="
+    ports:
+      - 8080:8080
+networks:
+  local:
+    external: false
