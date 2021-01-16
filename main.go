@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/ballpor98/Go-NaCl-S/routers"
 )
 
 
@@ -15,6 +17,9 @@ func setupRouter() *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"timestamp": time.Now()})
 	})
 
+	r.POST("/encrypt", routers.Encrypt)
+	r.POST("/decrypt", routers.Decrypt)
+	
 	return r
 }
 
