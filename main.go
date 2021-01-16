@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"time"
 	"net/http"
 
@@ -9,21 +10,31 @@ import (
 	"github.com/ballpor98/Go-NaCl-S/routers"
 )
 
+func readConfig() gin.HandlerFunc {
+	AESbase64 := os.Getenv("AES_SECRET")
+	if len(AESbase64) == 0 {
+		panic("can't read AES_SECRET")
+	}
 
-func setupRouter() *gin.Engine {
-	r := gin.Default()
+	return func(c *gin.Context) {
+		c.Set("AES_SECRET", AESbase64)
+	}
+}
 
-	r.GET("/healthz", func(c *gin.Context) {
+func setupRouter(e *gin.Engine) {
+	e.GET("/healthz", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"timestamp": time.Now()})
 	})
 
-	r.POST("/encrypt", routers.Encrypt)
-	r.POST("/decrypt", routers.Decrypt)
+	e.POST("/encrypt", routers.Encrypt)
+	e.POST("/decrypt", routers.Decrypt)
 	
-	return r
+	return
 }
 
 func main() {
-	r := setupRouter()
-	r.Run(":8080")
+	e := gin.Default()
+	e.Use(readConfig())
+	setupRouter(e)
+	e.Run(":8080")
 }
