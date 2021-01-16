@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/ballpor98/Go-NaCl-S/core"
 )
 
 // EncryptRequestModel encrypt api request model
@@ -20,13 +22,22 @@ type EncryptResponseModel struct {
 
 // Encrypt router
 func Encrypt(c *gin.Context) {
+	//read config
+	secret := c.MustGet("AES_SECRET").(string)
+
+	// validate and parse request
 	var request EncryptRequestModel
 	if err := c.ShouldBindJSON(&request); err != nil {
 	  c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	  return
 	}
 
-	response := EncryptResponseModel{Ciphertext: "QWx9S3BdA3980PKyNlF4YubC2Ko5", Nonce: request.Nonce}
+	// handler
+	ciphertext, err := core.Encrypt(request.Plaintext, secret, request.Nonce)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
 
+	// response
+	response := EncryptResponseModel{Ciphertext: ciphertext, Nonce: request.Nonce}
 	c.JSON(http.StatusOK, response)
 }
