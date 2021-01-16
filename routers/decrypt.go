@@ -29,12 +29,14 @@ func Decrypt(c *gin.Context) {
 	var request DecryptRequestModel
 	if err := c.ShouldBindJSON(&request); err != nil {
 	  c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	  return
 	}
 
 	// handler
 	plaintext, err := core.Decrypt(request.Ciphertext, secret, request.Nonce)
 	if err != nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	// response

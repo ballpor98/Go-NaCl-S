@@ -29,12 +29,14 @@ func Encrypt(c *gin.Context) {
 	var request EncryptRequestModel
 	if err := c.ShouldBindJSON(&request); err != nil {
 	  c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	  return
 	}
 
 	// handler
 	ciphertext, err := core.Encrypt(request.Plaintext, secret, request.Nonce)
 	if err != nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	// response
